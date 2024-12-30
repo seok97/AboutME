@@ -1,9 +1,9 @@
 import './App.css'
-import PostsList from "./components/PostsList.jsx";
+import AboutMe from "./components/AboutMe.jsx";
 
 function App() {
     return <main>
-        <PostsList />
+        <AboutMe />
     </main>;
 }
 
