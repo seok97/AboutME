@@ -1,5 +1,5 @@
 import githubAPI from "../hooks/api/githubAPIs.js";
-import MDEditor from '@uiw/react-md-editor';
+import ReactMarkdown from "react-markdown";
 import {useEffect, useState} from "react";
 
 function AboutMe() {
@@ -37,9 +37,14 @@ function AboutMe() {
         return <div>Error loading data.</div>;
     }
 
-    return <div className="markdownDiv" data-color-mode="dark">
-        <MDEditor.Markdown source={aboutMe} />
-    </div>
+    return(
+        // <div className="markdownDiv" data-color-mode="dark">
+        //     <MDEditor.Markdown source={aboutMe} />
+        // </div>
+        <>
+            <ReactMarkdown>{aboutMe}</ReactMarkdown>
+        </>
+    )
 }
 
 

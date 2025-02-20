@@ -30,7 +30,7 @@ function githubAPI() {
             const decoder = new TextDecoder('utf-8');
             return decoder.decode(binaryArray);
         })
-
+        console.log(response)
         return response
     }
 

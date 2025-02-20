@@ -1,4 +1,4 @@
-import './App.css'
+// import './App.css'
 import AboutMe from "./components/AboutMe.jsx";
 
 function App() {
