@@ -234,6 +234,7 @@ body {
     padding-left: 20px;
     margin: 8px 0;
     color: var(--text-secondary-color);
+    line-height: 1.6;
 }
 
 .achievement-list li::before {
@@ -241,6 +242,21 @@ body {
     position: absolute;
     left: 0;
     color: var(--primary-color);
+}
+
+/* 중첩된 구조를 위한 스타일 */
+.achievement-list li[style*="padding-left"] {
+    font-size: 0.9em;
+    margin: 4px 0;
+    color: var(--text-secondary-color);
+    opacity: 0.9;
+}
+
+/* 들여쓰기된 내용의 시각적 구분 */
+.achievement-list li:contains("  ") {
+    border-left: 1px solid rgba(106, 130, 251, 0.3);
+    padding-left: 15px;
+    margin-left: 10px;
 }
 
 .project-footer {
@@ -286,6 +302,56 @@ body {
     font-size: 0.8em;
     margin-left: 10px;
     vertical-align: middle;
+}
+
+/* 회고 섹션 스타일 */
+.reflection {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.reflection h4 {
+    font-size: 1.1em;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 500;
+    position: relative;
+    padding-left: 20px;
+}
+
+.reflection h4::before {
+    content: '💭';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 1em;
+}
+
+.reflection-content {
+    background: rgba(0,0,0,0.15);
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+}
+
+.reflection-item {
+    color: var(--text-secondary-color);
+    line-height: 1.7;
+    margin: 0;
+    font-style: italic;
+    font-size: 0.95em;
+}
+
+/* 현재 진행 중인 프로젝트의 회고 섹션 */
+.current-project .reflection-content {
+    border-left-color: var(--current-color);
+}
+
+.current-project .reflection h4::before {
+    content: '🌟';
 }
 
 @media (max-width: 768px) {

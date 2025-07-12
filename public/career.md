@@ -1,21 +1,34 @@
 ## TA (Target Advisor)
 
+> 프로젝트명 : TA
 > 진행 기간 : 2025.03.10 ~ 진행중
 > 발주 기관 : LG CNS
-> 주요 역할 : TA 프로젝트 프레임워크 구축 및 APIM 개발
-> 기술 스택 : Spring Boot, Google BigQuery, Airflow, PostgreSQL, Google Cloud
+> 주요 역할 : google cloud platform 환경에서 was, airflow 구축 및 개발
+> 기술 스택 : Spring Boot, Airflow, Docker, Google BigQuery, PostgreSQL, Google Cloud
 
 ### 업무 성과
 - **Spring boot 프레임워크 구축**
   - Simba Google BigQuery JDBC 드라이버 적용 및 빅쿼리 실행 로직 개발
-  - 다중 Datasource 설정
+  - 다중 Datasource 설정 (PostgreSQL, BigQuery)
 - **타 협력사 개발 지원 - LG 자체 spring 기반 프레임워크**
-  - Simba Google BigQuery JDBC 연동 샘플 추가
-  - Google Cloud Storage 업/다운 로직 샘플 추가
+  - LG 자체 개발 프레임워크로 개발된 was 프로젝트에 기술지원을 하였다.
+  - Simba Google BigQuery JDBC 설정, 샘플 추가
+  - Google Cloud Storage 관련 기능 설정, 샘플 추가
 - **Airflow 개발**
   - 배치/실시간 작업 요청 수행 airflow 설계 및 개발
   - 일일 빅쿼리 수행 dag 개발
   - 분단위 작업체크(Postgresql DB) 후 빅쿼리 수행 dag 개발
+- **동시성 이슈 해결**
+  - 프로세스가 동시에 병렬로 처리되어 발생한 이슈
+    - 하나의 빅쿼리 테이블에 delete, update, insert 쿼리가 동시에 실행되어 충돌이 발생
+      - 해결
+        - 큐 방식으로 순차처리하는 google cloud tasks 를 사용해 해당 DML 처리 시 cloud tasks 를 통해 실행하도록 하여 직렬화 후 순서대로 처리하도록 하였다.
+        - 이를 위해 다음과 같이 흐름을 수정하였다.
+        - 흐름
+          - airflow -> cloud run A (기존 airflow 주요 프로세스) -> 충돌 위험이 있는 DML 처리시 cloud tasks 로 요청 후 pub/sub 메세지 풀링 -> cloud run (빅쿼리 실행만 하는 서비스로 결과를 pub/sub 으로 push) -> cloud run A 에서 결과를 받고 다음 로직 실행
+
+### 회고
+- 기존 airflow 에서 실행하던 빅쿼리 실행 로직 일부분을 cloud run 서비스로 마이그레이션 하기위해 cloud run, cloud tasks, pub/sub 등의 환경을 세팅하는데 많은 시행착오를 겪어서 고생했지만, 그만큼 경험을 얻었기 때문에 다른 클라우드를 사용할때 비교적 빠르게 해결 할 수 있을 것 같다.
 
 ---
 

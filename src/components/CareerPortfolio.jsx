@@ -15,11 +15,28 @@ const parseMarkdownToProjects = (markdown) => {
             client: '',
             role: '',
             achievements: [],
-            techStack: []
+            techStack: [],
+            reflection: []
         };
 
         let currentAchievement = null;
         let isAchievementSection = false;
+        let isReflectionSection = false;
+        let currentDetailStack = [];
+
+        const processIndentedContent = (line, content) => {
+            const indentLevel = line.match(/^(\s*)/)[1].length;
+            const depth = Math.floor(indentLevel / 2); // 2칸마다 depth 1 증가
+            
+            // depth에 따라 적절한 위치에 내용 추가
+            if (depth === 1) {
+                currentAchievement.details.push(content);
+            } else if (depth > 1) {
+                // 더 깊은 들여쓰기의 경우 구조적으로 표현
+                const prefix = '  '.repeat(depth - 1);
+                currentAchievement.details.push(prefix + content);
+            }
+        };
 
         lines.forEach(line => {
             const trimmedLine = line.trim();
@@ -36,16 +53,35 @@ const parseMarkdownToProjects = (markdown) => {
                     project.techStack = value.split(',').map(tech => tech.trim());
                 }
             } else if (trimmedLine.startsWith('### ')) {
-                isAchievementSection = true;
-            } else if (isAchievementSection && currentAchievement && (line.startsWith('  - ') || line.startsWith('\t- '))) {
-                currentAchievement.details.push(trimmedLine.substring(1).trim());
-            } else if (isAchievementSection && trimmedLine.startsWith('- ')) {
-                const title = trimmedLine.substring(1).replace(/\*\*/g, '').trim();
-                currentAchievement = {
-                    title: title,
-                    details: []
-                };
-                project.achievements.push(currentAchievement);
+                const sectionTitle = trimmedLine.substring(3).trim();
+                if (sectionTitle.includes('업무 성과')) {
+                    isAchievementSection = true;
+                    isReflectionSection = false;
+                } else if (sectionTitle.includes('회고')) {
+                    isAchievementSection = false;
+                    isReflectionSection = true;
+                } else {
+                    isAchievementSection = false;
+                    isReflectionSection = false;
+                }
+            } else if (isAchievementSection && line.match(/^\s*-\s/)) {
+                const indentLevel = line.match(/^(\s*)/)[1].length;
+                const content = trimmedLine.substring(1).trim();
+                
+                if (indentLevel === 0) {
+                    // 최상위 레벨 - 새로운 achievement
+                    const title = content.replace(/\*\*/g, '').trim();
+                    currentAchievement = {
+                        title: title,
+                        details: []
+                    };
+                    project.achievements.push(currentAchievement);
+                } else if (currentAchievement) {
+                    // 하위 레벨 - 기존 achievement의 세부사항
+                    processIndentedContent(line, content);
+                }
+            } else if (isReflectionSection && trimmedLine.startsWith('- ')) {
+                project.reflection.push(trimmedLine.substring(1).trim());
             }
         });
 
@@ -129,6 +165,17 @@ const CareerPortfolio = () => {
                         </div>
                     ))}
                 </div>
+
+                {project.reflection && project.reflection.length > 0 && (
+                    <div className="reflection">
+                        <h4>회고</h4>
+                        <div className="reflection-content">
+                            {project.reflection.map((reflection, index) => (
+                                <p key={index} className="reflection-item">{reflection}</p>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="project-footer">
